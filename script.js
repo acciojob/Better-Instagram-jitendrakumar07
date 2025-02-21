@@ -1,39 +1,42 @@
-//your code here
 document.addEventListener("DOMContentLoaded", function() {
-  // Set each div's inline background image from its computed style so swapping works
-  const images = document.querySelectorAll(".image");
-  images.forEach(img => {
-    const computedBg = window.getComputedStyle(img).backgroundImage;
-    img.style.backgroundImage = computedBg;
+  const draggables = document.querySelectorAll('.draggable');
+  
+  draggables.forEach(draggable => {
+    draggable.addEventListener('dragstart', dragStart);
+    draggable.addEventListener('dragover', dragOver);
+    draggable.addEventListener('drop', drop);
   });
   
-  const draggables = document.querySelectorAll(".image");
-
-  draggables.forEach(draggable => {
-    draggable.addEventListener("dragstart", dragStart);
-    draggable.addEventListener("dragover", dragOver);
-    draggable.addEventListener("drop", drop);
-  });
-
   function dragStart(e) {
-    e.dataTransfer.setData("text/plain", e.target.id);
+    // Store the id of the draggable element.
+    e.dataTransfer.setData('text/plain', e.currentTarget.id);
   }
-
+  
   function dragOver(e) {
-    e.preventDefault();
+    e.preventDefault(); // Allow dropping
   }
-
+  
   function drop(e) {
     e.preventDefault();
-    const sourceId = e.dataTransfer.getData("text/plain");
+    const sourceId = e.dataTransfer.getData('text/plain');
     const sourceElem = document.getElementById(sourceId);
     const targetElem = e.currentTarget;
+    
+    // If dropped on itself, do nothing.
     if (sourceElem === targetElem) return;
     
-    // Swap the inline background images between the source and target elements
-    const sourceBg = sourceElem.style.backgroundImage;
-    const targetBg = targetElem.style.backgroundImage;
-    sourceElem.style.backgroundImage = targetBg;
-    targetElem.style.backgroundImage = sourceBg;
+    // Get the image elements within the draggable containers.
+    const sourceImg = sourceElem.querySelector('img');
+    const targetImg = targetElem.querySelector('img');
+    
+    // Swap the src attributes.
+    const tempSrc = sourceImg.src;
+    sourceImg.src = targetImg.src;
+    targetImg.src = tempSrc;
+    
+    // Optionally, swap the alt attributes.
+    const tempAlt = sourceImg.alt;
+    sourceImg.alt = targetImg.alt;
+    targetImg.alt = tempAlt;
   }
 });
